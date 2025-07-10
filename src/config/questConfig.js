@@ -1,0 +1,9 @@
+export default {
+  QUEST_HELP_QUESTID: 'c-greta-help-hub',
+  GET_STARTED_QUESTID: 'c-greta-get-started',
+  USER_ID: 'u-fff36b3c-8769-4655-b8ce-68753fcb2fa4',
+  APIKEY: 'k-46389197-7af2-478a-a71b-0cb5f51aaf41',
+  TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1LWZmZjM2YjNjLTg3NjktNDY1NS1iOGNlLTY4NzUzZmNiMmZhNCIsImlhdCI6MTc1MjA2NDA5OCwiZXhwIjoxNzU0NjU2MDk4fQ.N0O07EWOfs7vrotShAJR9Um4-llHHUT7YBSyf0K2lRk',
+  ENTITYID: 'e-25aa8ea4-bb6d-4622-bb40-f3d9cb717cbb',
+  PRIMARY_COLOR: '#0ea5e9'
+};

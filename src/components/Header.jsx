@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiEdit3, FiHome, FiFileText } = FiIcons;
+const { FiEdit3, FiHome, FiCopy, FiUsers } = FiIcons;
 
 function Header() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ function Header() {
               <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
                 moanote AI
               </h1>
-              <p className="text-sm text-gray-600">自分らしい文体でnoteを書こう</p>
+              <p className="text-sm text-gray-600">AIプロンプト生成ツール</p>
             </div>
           </motion.div>
 
@@ -41,21 +41,23 @@ function Header() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/steps')}
+                  onClick={() => navigate('/characters')}
                   className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-primary-600 transition-colors"
                 >
-                  <SafeIcon icon={FiEdit3} className="text-lg" />
-                  <span>新規作成</span>
+                  <SafeIcon icon={FiUsers} className="text-lg" />
+                  <span>キャラクター</span>
                 </motion.button>
+                
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/draft')}
+                  onClick={() => navigate('/steps')}
                   className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-primary-600 transition-colors"
                 >
-                  <SafeIcon icon={FiFileText} className="text-lg" />
-                  <span>下書きから作成</span>
+                  <SafeIcon icon={FiCopy} className="text-lg" />
+                  <span>プロンプト生成</span>
                 </motion.button>
+                
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

@@ -8,16 +8,13 @@ const { FiCheck } = FiIcons;
 
 function StepProgress() {
   const { state } = useSteps();
-
+  
   const steps = [
     'キーワード',
     '読者設定',
     '書き手設定',
     '文体・構成',
-    '一次情報',
-    '心理効果',
-    '参考文体',
-    'ゴール'
+    '一次情報'
   ];
 
   return (
@@ -27,10 +24,9 @@ function StepProgress() {
           STEP {state.currentStep}: {steps[state.currentStep - 1]}
         </h2>
         <div className="text-sm text-gray-600">
-          {state.currentStep} / {state.totalSteps}
+          {state.currentStep} / 5
         </div>
       </div>
-      
       <div className="flex items-center space-x-2">
         {steps.map((step, index) => (
           <React.Fragment key={index}>

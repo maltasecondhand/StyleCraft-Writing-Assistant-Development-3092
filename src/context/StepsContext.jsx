@@ -4,7 +4,7 @@ const StepsContext = createContext();
 
 const initialState = {
   currentStep: 1,
-  totalSteps: 8,
+  totalSteps: 5,
   data: {
     keywords: [],
     purpose: '',
@@ -27,22 +27,11 @@ const initialState = {
       template: 'prep',
       emojiFrequency: 'moderate'
     },
+    wordCount: 3000,
     primaryInfo: {
       facts: '',
       feelings: ''
-    },
-    psychologyEffects: {
-      empathy: false,
-      urgency: false,
-      authority: false,
-      scarcity: false
-    },
-    referenceStyle: '',
-    goal: '',
-    wordCount: 1500,
-    apiKey: '',
-    draftText: '',
-    fromDraft: false
+    }
   }
 };
 
@@ -51,9 +40,20 @@ function stepsReducer(state, action) {
     case 'SET_STEP':
       return { ...state, currentStep: action.payload };
     case 'UPDATE_DATA':
-      return {
-        ...state,
-        data: { ...state.data, ...action.payload }
+      return { 
+        ...state, 
+        data: { 
+          ...state.data, 
+          ...action.payload 
+        } 
+      };
+    case 'LOAD_TEMPLATE':
+      return { 
+        ...state, 
+        data: { 
+          ...state.data, 
+          ...action.payload 
+        } 
       };
     case 'RESET':
       return initialState;

@@ -22,10 +22,10 @@ function DraftMode() {
     if (!draftText.trim()) return;
 
     setIsAnalyzing(true);
-    
+
     // Simulate draft analysis
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // Extract information from draft and populate context
     const extractedData = {
       keywords: extractKeywords(draftText),
@@ -40,10 +40,7 @@ function DraftMode() {
     };
 
     // Update context with extracted data
-    dispatch({
-      type: 'UPDATE_DATA',
-      payload: extractedData
-    });
+    dispatch({ type: 'UPDATE_DATA', payload: extractedData });
 
     setIsAnalyzing(false);
     navigate('/steps');
@@ -67,9 +64,9 @@ function DraftMode() {
     const facts = sentences.filter(sentence => 
       sentence.includes('年') || 
       sentence.includes('月') || 
-      sentence.includes('日') ||
-      sentence.includes('時間') ||
-      sentence.includes('回') ||
+      sentence.includes('日') || 
+      sentence.includes('時間') || 
+      sentence.includes('回') || 
       /\d/.test(sentence)
     );
     return facts.slice(0, 3).join('。');
@@ -81,35 +78,31 @@ function DraftMode() {
     const feelings = sentences.filter(sentence => 
       sentence.includes('思い') || 
       sentence.includes('感じ') || 
-      sentence.includes('嬉しい') ||
-      sentence.includes('悲しい') ||
-      sentence.includes('楽しい') ||
+      sentence.includes('嬉しい') || 
+      sentence.includes('悲しい') || 
+      sentence.includes('楽しい') || 
       sentence.includes('不安')
     );
     return feelings.slice(0, 3).join('。');
   };
 
   const features = [
-    {
-      icon: FiEdit3,
-      title: '自動分析',
-      description: '下書きから自動でキーワードと構成を抽出'
-    },
-    {
-      icon: FiTarget,
-      title: '構成最適化',
-      description: '既存の文章を読みやすい構成に再編成'
-    },
-    {
-      icon: FiUsers,
-      title: 'ペルソナ推定',
-      description: '文章から想定読者を自動で推定'
-    },
-    {
-      icon: FiHeart,
-      title: '感情分析',
-      description: '事実と感想を自動で分類・整理'
-    }
+    { icon: FiEdit3, title: '自動分析', description: '下書きから自動でキーワードと構成を抽出' },
+    { icon: FiTarget, title: '構成最適化', description: '既存の文章を読みやすい構成に再編成' },
+    { icon: FiUsers, title: 'ペルソナ推定', description: '文章から想定読者を自動で推定' },
+    { icon: FiHeart, title: '感情分析', description: '事実と感想を自動で分類・整理' }
+  ];
+
+  const wordCountOptions = [
+    { value: 800, label: '800文字（短め）', description: '要点を簡潔に' },
+    { value: 1200, label: '1,200文字（標準）', description: '読みやすいボリューム' },
+    { value: 1500, label: '1,500文字（推奨）', description: 'noteに最適' },
+    { value: 2000, label: '2,000文字（長め）', description: '詳しく解説' },
+    { value: 2500, label: '2,500文字（詳細）', description: '専門的な内容' },
+    { value: 3000, label: '3,000文字（超詳細）', description: '完全ガイド' },
+    { value: 5000, label: '5,000文字（深掘り）', description: '徹底解説記事' },
+    { value: 8000, label: '8,000文字（専門記事）', description: '専門書レベル' },
+    { value: 10000, label: '10,000文字（完全版）', description: 'eBook形式の詳細解説' }
   ];
 
   if (isAnalyzing) {
@@ -180,14 +173,11 @@ function DraftMode() {
                   value={draftText}
                   onChange={handleDraftChange}
                   placeholder="ここに下書きや既存の文章を貼り付けてください。
-
-例：
-今日はReactについて書きたいと思います。
+例： 今日はReactについて書きたいと思います。
 最近3ヶ月間、毎日2時間勉強していました。
 最初は難しくて挫折しそうになりましたが、
 基礎が身についてくると楽しくなりました。
 初めてアプリが動いたときは本当に感動しました。
-
 プログラミング初心者の方にも、
 継続することの大切さを伝えたいです。"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 h-64 resize-none font-japanese"
@@ -216,12 +206,11 @@ function DraftMode() {
                   onChange={(e) => setWordCount(parseInt(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value={800}>800文字（短め）</option>
-                  <option value={1200}>1,200文字（標準）</option>
-                  <option value={1500}>1,500文字（推奨）</option>
-                  <option value={2000}>2,000文字（長め）</option>
-                  <option value={2500}>2,500文字（詳細）</option>
-                  <option value={3000}>3,000文字（超詳細）</option>
+                  {wordCountOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label} - {option.description}
+                    </option>
+                  ))}
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
                   noteの読みやすさを考慮した文字数設定

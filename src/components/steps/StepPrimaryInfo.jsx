@@ -1,28 +1,30 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useSteps } from '../../context/StepsContext';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiArrowRight, FiArrowLeft, FiInfo } = FiIcons;
+const { FiArrowRight, FiArrowLeft, FiInfo, FiCopy } = FiIcons;
 
 function StepPrimaryInfo() {
   const { state, dispatch } = useSteps();
+  const navigate = useNavigate();
 
   const updateInfo = (field, value) => {
-    dispatch({
-      type: 'UPDATE_DATA',
-      payload: {
-        primaryInfo: {
-          ...state.data.primaryInfo,
-          [field]: value
-        }
-      }
+    dispatch({ 
+      type: 'UPDATE_DATA', 
+      payload: { 
+        primaryInfo: { 
+          ...state.data.primaryInfo, 
+          [field]: value 
+        } 
+      } 
     });
   };
 
   const nextStep = () => {
-    dispatch({ type: 'SET_STEP', payload: 6 });
+    navigate('/output');
   };
 
   const prevStep = () => {
@@ -59,7 +61,7 @@ function StepPrimaryInfo() {
             事実（客観的な情報）
           </label>
           <textarea
-            value={state.data.primaryInfo.facts}
+            value={state.data.primaryInfo?.facts || ''}
             onChange={(e) => updateInfo('facts', e.target.value)}
             placeholder="例：
 - 3ヶ月間、毎日2時間Reactの学習をした
@@ -78,7 +80,7 @@ function StepPrimaryInfo() {
             感想（主観的な体験・気持ち）
           </label>
           <textarea
-            value={state.data.primaryInfo.feelings}
+            value={state.data.primaryInfo?.feelings || ''}
             onChange={(e) => updateInfo('feelings', e.target.value)}
             placeholder="例：
 - 最初は難しくて挫折しそうになった
@@ -126,14 +128,15 @@ function StepPrimaryInfo() {
           <SafeIcon icon={FiArrowLeft} />
           <span>戻る</span>
         </motion.button>
+        
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={nextStep}
-          className="flex items-center space-x-2 px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+          className="flex items-center space-x-2 px-8 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-colors font-semibold"
         >
-          <span>次へ</span>
-          <SafeIcon icon={FiArrowRight} />
+          <SafeIcon icon={FiCopy} />
+          <span>プロンプトを生成</span>
         </motion.button>
       </div>
     </div>

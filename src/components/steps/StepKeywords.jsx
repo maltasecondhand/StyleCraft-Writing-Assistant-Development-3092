@@ -4,31 +4,75 @@ import { useSteps } from '../../context/StepsContext';
 import SafeIcon from '../../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiPlus, FiX, FiArrowRight } = FiIcons;
+const { FiPlus, FiX, FiArrowRight, FiSearch, FiTrendingUp, FiBarChart } = FiIcons;
 
 function StepKeywords() {
   const { state, dispatch } = useSteps();
   const [keyword, setKeyword] = useState('');
+  const [seoAnalysis, setSeoAnalysis] = useState({});
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const addKeyword = () => {
+  const addKeyword = async () => {
     if (keyword.trim() && state.data.keywords.length < 10) {
+      const newKeyword = keyword.trim();
       dispatch({
         type: 'UPDATE_DATA',
-        payload: {
-          keywords: [...state.data.keywords, keyword.trim()]
-        }
+        payload: { keywords: [...state.data.keywords, newKeyword] }
       });
+      
+      // SEO分析を実行
+      await analyzeSEO(newKeyword);
       setKeyword('');
     }
   };
 
   const removeKeyword = (index) => {
+    const removedKeyword = state.data.keywords[index];
     dispatch({
       type: 'UPDATE_DATA',
-      payload: {
-        keywords: state.data.keywords.filter((_, i) => i !== index)
-      }
+      payload: { keywords: state.data.keywords.filter((_, i) => i !== index) }
     });
+    
+    // SEO分析からも削除
+    const newAnalysis = { ...seoAnalysis };
+    delete newAnalysis[removedKeyword];
+    setSeoAnalysis(newAnalysis);
+  };
+
+  const analyzeSEO = async (keywordToAnalyze) => {
+    setIsAnalyzing(true);
+    try {
+      // モックSEO分析（実際の実装では外部APIを使用）
+      const mockAnalysis = generateMockSEOData(keywordToAnalyze);
+      setSeoAnalysis(prev => ({
+        ...prev,
+        [keywordToAnalyze]: mockAnalysis
+      }));
+    } catch (error) {
+      console.error('SEO analysis failed:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const generateMockSEOData = (keyword) => {
+    // 実際の実装では、Google Keyword Planner API や他のSEOツールを使用
+    const searchVolumes = [100, 500, 1000, 2900, 5400, 8100, 12100, 18100, 27100, 40500];
+    const difficulties = ['低', '中', '高'];
+    const trends = ['上昇', '安定', '下降'];
+    
+    return {
+      searchVolume: searchVolumes[Math.floor(Math.random() * searchVolumes.length)],
+      difficulty: difficulties[Math.floor(Math.random() * difficulties.length)],
+      trend: trends[Math.floor(Math.random() * trends.length)],
+      relatedKeywords: [
+        `${keyword} 方法`,
+        `${keyword} コツ`,
+        `${keyword} 初心者`,
+        `${keyword} おすすめ`
+      ],
+      competitorScore: Math.floor(Math.random() * 100)
+    };
   };
 
   const updatePurpose = (purpose) => {
@@ -44,6 +88,22 @@ function StepKeywords() {
     }
   };
 
+  const getSEORecommendation = (analysis) => {
+    if (!analysis) return '';
+    
+    const { searchVolume, difficulty } = analysis;
+    
+    if (searchVolume > 10000 && difficulty === '高') {
+      return '🔥 高ボリュームですが競合多数。ロングテールキーワードとの組み合わせを推奨';
+    } else if (searchVolume > 5000 && difficulty === '中') {
+      return '✨ バランスの良いキーワード。SEO効果が期待できます';
+    } else if (searchVolume < 1000 && difficulty === '低') {
+      return '🎯 ニッチなキーワード。専門性をアピールできます';
+    } else {
+      return '📈 検索需要があり、取り組みやすいキーワードです';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -51,7 +111,7 @@ function StepKeywords() {
           記事のキーワードを設定しましょう
         </h3>
         <p className="text-gray-600">
-          記事で扱いたいテーマやキーワードを最大10個まで入力してください
+          記事で扱いたいテーマやキーワードを最大10個まで入力してください。SEO分析も自動で実行されます。
         </p>
       </div>
 
@@ -73,10 +133,17 @@ function StepKeywords() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={addKeyword}
-              disabled={!keyword.trim() || state.data.keywords.length >= 10}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={!keyword.trim() || state.data.keywords.length >= 10 || isAnalyzing}
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
             >
-              <SafeIcon icon={FiPlus} />
+              {isAnalyzing ? (
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
+                  <SafeIcon icon={FiSearch} />
+                </motion.div>
+              ) : (
+                <SafeIcon icon={FiPlus} />
+              )}
+              <span>{isAnalyzing ? '分析中' : '追加'}</span>
             </motion.button>
           </div>
           <p className="text-sm text-gray-500 mt-1">
@@ -87,23 +154,88 @@ function StepKeywords() {
         {state.data.keywords.length > 0 && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              追加されたキーワード
+              追加されたキーワードとSEO分析
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="space-y-3">
               {state.data.keywords.map((kw, index) => (
                 <motion.div
                   key={index}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center space-x-2 px-3 py-1 bg-primary-100 text-primary-800 rounded-full"
+                  className="bg-white border border-gray-200 rounded-lg p-4"
                 >
-                  <span>{kw}</span>
-                  <button
-                    onClick={() => removeKeyword(index)}
-                    className="text-primary-600 hover:text-primary-800"
-                  >
-                    <SafeIcon icon={FiX} className="text-sm" />
-                  </button>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg font-medium text-gray-800">{kw}</span>
+                      <button
+                        onClick={() => removeKeyword(index)}
+                        className="text-gray-400 hover:text-red-500 transition-colors"
+                      >
+                        <SafeIcon icon={FiX} className="text-sm" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {seoAnalysis[kw] && (
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center space-x-1 text-blue-600 mb-1">
+                            <SafeIcon icon={FiSearch} className="text-sm" />
+                            <span className="text-xs font-medium">検索ボリューム</span>
+                          </div>
+                          <span className="text-lg font-bold">{seoAnalysis[kw].searchVolume.toLocaleString()}</span>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center space-x-1 text-orange-600 mb-1">
+                            <SafeIcon icon={FiBarChart} className="text-sm" />
+                            <span className="text-xs font-medium">競合度</span>
+                          </div>
+                          <span className={`text-lg font-bold ${
+                            seoAnalysis[kw].difficulty === '低' ? 'text-green-600' :
+                            seoAnalysis[kw].difficulty === '中' ? 'text-yellow-600' : 'text-red-600'
+                          }`}>
+                            {seoAnalysis[kw].difficulty}
+                          </span>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center space-x-1 text-green-600 mb-1">
+                            <SafeIcon icon={FiTrendingUp} className="text-sm" />
+                            <span className="text-xs font-medium">トレンド</span>
+                          </div>
+                          <span className="text-lg font-bold">{seoAnalysis[kw].trend}</span>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center space-x-1 text-purple-600 mb-1">
+                            <SafeIcon icon={FiTrendingUp} className="text-sm" />
+                            <span className="text-xs font-medium">スコア</span>
+                          </div>
+                          <span className="text-lg font-bold">{seoAnalysis[kw].competitorScore}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                        <p className="text-sm text-blue-800">
+                          {getSEORecommendation(seoAnalysis[kw])}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-xs font-medium text-gray-600 mb-1">関連キーワード:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {seoAnalysis[kw].relatedKeywords.map((related, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs cursor-pointer hover:bg-primary-100 transition-colors"
+                              onClick={() => setKeyword(related)}
+                            >
+                              {related}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
